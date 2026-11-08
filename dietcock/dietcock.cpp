@@ -2,6 +2,7 @@
 #include<glad/glad.h>
 #define GLFW_INCLUDE_NONE
 #include<GLFW/glfw3.h>
+#include<cmath>
 
 const char* vertex_shader_source = "#version 330 core \n"
 "layout (location = 0) in vec3 aPos;\n"
@@ -12,9 +13,10 @@ const char* vertex_shader_source = "#version 330 core \n"
 
 const char* fragment_shader_source = "#version 330 core \n"
 "out vec4 FragColor;\n"
+"uniform vec4 fag_color;"
 "void main()\n"
 "{\n"
-"   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+"   FragColor = fag_color;\n"
 "}\0";
 
 void framebuffer_call_size(GLFWwindow* window, int width, int height);
@@ -107,9 +109,17 @@ int main(void) {
 	
 	while (!glfwWindowShouldClose(window)) {
 		process_input(window);
+
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
+
 		glUseProgram(shader_program);
+
+		float time_value = glfwGetTime();
+		float green_value = (sin(time_value) / 2.0f) + 0.5f;
+		int vertex_color_location = glGetUniformLocation(shader_program, "fag_color");
+		glUniform4f(vertex_color_location, 0.0f, green_value, 0.0f, 1.0f);
+
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 		glfwSwapBuffers(window);
