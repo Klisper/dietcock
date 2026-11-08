@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="dietcock/dietcock.vcxproj" Id="555c42c0-90a5-459c-9d68-6a9f44ffaf5e" />
+</Solution>
