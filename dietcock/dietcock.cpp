@@ -3,22 +3,30 @@
 #define GLFW_INCLUDE_NONE
 #include<GLFW/glfw3.h>
 #include<cmath>
-
+#include"shader.h"
+/*
 const char* vertex_shader_source = "#version 330 core \n"
 "layout (location = 0) in vec3 aPos;\n"
+"layout (location = 1) in vec3 aColor;\n"
+"out vec3 our_color;\n"
 "void main()\n"
 "{\n"
-"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+"   gl_Position = vec4(aPos, 1.0f);\n"
+"   our_color = aColor;\n"
 "}\0";
 
 const char* fragment_shader_source = "#version 330 core \n"
 "out vec4 FragColor;\n"
-"uniform vec4 fag_color;"
+"in vec3 our_color;\n"
 "void main()\n"
 "{\n"
-"   FragColor = fag_color;\n"
+"   FragColor = vec4(our_color, 1.0f);\n"
 "}\0";
+*/
 
+Shader our_shader("./shader.vs", "./fragment.fs");
+static char* read_file(const char* filepath);
+Shader shader_create(const char* vertex_path, const char* fragment_path);
 void framebuffer_call_size(GLFWwindow* window, int width, int height);
 void process_input(GLFWwindow* window);
 
@@ -76,19 +84,16 @@ int main(void) {
 	glGetProgramiv(shader_program, GL_LINK_STATUS, &success);
 	if (!success) {
 		glGetShaderInfoLog(shader_program, 512, NULL, info_log);
-		printf("shader program compilation failed\n");
+		printf("shader program compilation failed\n %s", info_log);
 	}
 
-	glUseProgram(shader_program);
 	glDeleteShader(vertex_shader);
 	glDeleteShader(fragment_shader);
-
 	float vertices[] = {
-		-0.5f, -0.5f, 0.0f,
-		0.5f, -0.5f, 0.0f,
-		0.0f, 0.5f, 0.0f
-	};
-
+     0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,  
+    -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,  
+     0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f  
+};    
 	unsigned int VAO, VBO;
 	// generate the Vertex Buffer Object
 	glGenVertexArrays(1, &VAO);
@@ -98,13 +103,16 @@ int main(void) {
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
+
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glBindVertexArray(0);
-	
+	glUseProgram(shader_program);
 	glfwSwapInterval(1);
 	
 	while (!glfwWindowShouldClose(window)) {
@@ -112,13 +120,6 @@ int main(void) {
 
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
-
-		glUseProgram(shader_program);
-
-		float time_value = glfwGetTime();
-		float green_value = (sin(time_value) / 2.0f) + 0.5f;
-		int vertex_color_location = glGetUniformLocation(shader_program, "fag_color");
-		glUniform4f(vertex_color_location, 0.0f, green_value, 0.0f, 1.0f);
 
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
