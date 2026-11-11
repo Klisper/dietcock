@@ -148,11 +148,17 @@
     <ClCompile Include="glad.c" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="shader.c" />
+    <ClCompile Include="shader.c">
+      <FileType>CppCode</FileType>
+      <ShowIncludes Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ShowIncludes>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
+    </ClCompile>
+    <None Include="fragment.fs" />
     <None Include="shader.vs" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shader.h" />
+    <ClInclude Include="stb_image.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

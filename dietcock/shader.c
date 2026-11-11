@@ -21,15 +21,14 @@ static char* read_file(const char* filepath) {
 		return NULL;
 	}
 
-	long read_bytes = fread(buffer, 1, length, file);
+	size_t read_bytes = fread(buffer, 1, length, file);
 	buffer[read_bytes] = '\0';
 	fclose(file);
 
 	return buffer;
 }
 Shader shader_create(const char* vertex_path, const char* fragment_path) {
-	Shader shader;
-	shader.ID = 0;
+	Shader shader = { 0 };
 
 	char* vertex_code = read_file(vertex_path);
 	char* fragment_code = read_file(fragment_path);
@@ -95,5 +94,5 @@ void shader_set_int(Shader* shader, const char* name, int value) {
 }
 
 void shader_set_float(Shader* shader, const char* name, float value) {
-	glUniform1i(glGetUniformLocation(shader->ID, name), value);
+	glUniform1f(glGetUniformLocation(shader->ID, name), value);
 }
