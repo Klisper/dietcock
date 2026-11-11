@@ -14,12 +14,13 @@ extern "C" {
 #endif
 
 
-
+    
     Shader shader_create(const char* vertexPath, const char* fragmentPath);
     void shader_use(Shader* shader);
     void shader_set_bool(Shader* shader, const char* name, bool value);
     void shader_set_int(Shader* shader, const char* name, int value);
     void shader_set_float(Shader* shader, const char* name, float value);
+    void shader_destroy(Shader* shader);
 
 #ifdef __cplusplus
 }

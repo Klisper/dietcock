@@ -4,6 +4,7 @@
 #include"shader.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include"stb_image.h"
+
 void framebuffer_call_size(GLFWwindow* window, int width, int height);
 void process_input(GLFWwindow* window);
 
@@ -25,19 +26,12 @@ int main(void) {
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 		printf("failed to initialize glad\n");
+		glfwTerminate();
 		return -1;
 	}
 	Shader shader;
 	shader = shader_create("./shader.vs", "./fragment.fs");
 
-/*	float vertices[] = {
-		// positions          // colors           // texture coords
-		 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 0.0f, // top right
-		 0.5f, -0.5f, 0.0f,    0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
-		-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
-		-0.5f,  0.5f, 0.0f,  1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left 
-	};
-*/
 	float vertices[] = {
 		// positions          // colors           // texture coords
 		 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
@@ -84,8 +78,10 @@ int main(void) {
 	int width, height, nr_channels;
 	stbi_set_flip_vertically_on_load(true);
 	unsigned char* data = stbi_load("gay.jpg", &width, &height, &nr_channels, 0);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	if (data) {
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		GLenum format = (nr_channels == 4) ? GL_RGBA : GL_RGB;
+		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 	else {
@@ -103,6 +99,7 @@ int main(void) {
 
 		glBindTexture(GL_TEXTURE_2D, texture);
 		shader_use(&shader);
+		shader_set_int(&shader, "our_texrure", 0);
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
@@ -112,11 +109,12 @@ int main(void) {
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);
-	glDeleteProgram(shader.ID);
+	shader_destroy(&shader);
 	glfwTerminate();
 	return 0;
 }
 void framebuffer_call_size(GLFWwindow* window, int width, int height){
+	(void)window;
 	glViewport(0, 0, width, height);
 }
 void process_input(GLFWwindow* window) {

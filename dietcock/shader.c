@@ -13,7 +13,10 @@ static char* read_file(const char* filepath) {
 	fseek(file, 0, SEEK_END);
 	long length = ftell(file);
 	fseek(file, 0, SEEK_SET);
-
+	if (length < 0) {
+		fclose(file);
+		return NULL;
+	}
 	char* buffer = (char*)malloc(length + 1);
 	if (!buffer) {
 		printf("shader memory allocation failed");
@@ -51,6 +54,10 @@ Shader shader_create(const char* vertex_path, const char* fragment_path) {
 	if (!success) {
 		glGetShaderInfoLog(vertex, 512, NULL, info_log);
 		printf("vertex shader compilation failed\n %s", info_log);
+		glDeleteShader(vertex);
+		free(vertex_code);
+		free(fragment_code);
+		return shader;
 	}
 	fragment = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragment, 1, (const char* const*)&fragment_code, NULL);
@@ -60,6 +67,11 @@ Shader shader_create(const char* vertex_path, const char* fragment_path) {
 	if (!success) {
 		glGetShaderInfoLog(fragment, 512, NULL, info_log);
 		printf("fragment shader compilation failed\n %s", info_log);
+		glDeleteShader(vertex);
+		glDeleteShader(fragment);
+		free(vertex_code);
+		free(fragment_code);
+		return shader;
 	}
 
 	shader.ID = glCreateProgram();
@@ -71,6 +83,13 @@ Shader shader_create(const char* vertex_path, const char* fragment_path) {
 	if (!success) {
 		glGetProgramInfoLog(shader.ID, 512, NULL, info_log);
 		printf("shader compilation failed %s\n", info_log);
+		glDeleteProgram(shader.ID);
+		glDeleteShader(vertex);
+		glDeleteShader(fragment);
+		free(vertex_code);
+		free(fragment_code);
+		shader.ID = 0;
+		return shader;
 	}
 	glDeleteShader(vertex);
 	glDeleteShader(fragment);
@@ -83,6 +102,13 @@ Shader shader_create(const char* vertex_path, const char* fragment_path) {
 
 void shader_use(Shader* shader) {
 	glUseProgram(shader->ID);
+}
+
+void shader_destroy(Shader* shader) {
+	if (shader && shader->ID != 0) {
+		glDeleteProgram(shader->ID);
+		shader->ID = 0;
+	}
 }
 
 void shader_set_bool(Shader* shader, const char* name, bool value) {
