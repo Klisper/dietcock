@@ -4,6 +4,7 @@
 #include"shader.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include"stb_image.h"
+#include"math.h"
 
 void framebuffer_call_size(GLFWwindow* window, int width, int height);
 void process_input(GLFWwindow* window);
@@ -39,10 +40,18 @@ int main(void) {
 		-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
 		-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left 
 	};
+
 	unsigned int indices[] = {
 		0, 1, 3, // first triangle
 		1, 2, 3  // second triangle
 	};
+	
+	vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
+	mat4 trans = mat4(1.0f);
+	trans = glm::translate(trans, vec3(1.0f, 1.0f, 1.0f));
+	vec = trans * vec;
+	printf("%f,%f,%f\n", vec.x, vec.y, vec.z);
+
 	unsigned int VAO, VBO, EBO;
 	// generate the Vertex Buffer Object, Vertex Array Object
 	glGenVertexArrays(1, &VAO);
