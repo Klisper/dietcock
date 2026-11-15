@@ -29,13 +29,14 @@ int main(void) {
 		printf("failed to initialize glad\n");
 		glfwTerminate();
 		return -1;
-	}
+	}	
+
 	Shader shader;
 	shader = shader_create("./shader.vs", "./fragment.fs");
-
+	
 	float vertices[] = {
 		// positions          // colors           // texture coords
-		 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
+		 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 1.0f,   1.0f, 1.0f, // top right
 		 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
 		-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
 		-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left 
@@ -46,11 +47,7 @@ int main(void) {
 		1, 2, 3  // second triangle
 	};
 	
-	vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
-	mat4 trans = mat4(1.0f);
-	trans = glm::translate(trans, vec3(1.0f, 1.0f, 1.0f));
-	vec = trans * vec;
-	printf("%f,%f,%f\n", vec.x, vec.y, vec.z);
+
 
 	unsigned int VAO, VBO, EBO;
 	// generate the Vertex Buffer Object, Vertex Array Object
@@ -109,6 +106,17 @@ int main(void) {
 		glBindTexture(GL_TEXTURE_2D, texture);
 		shader_use(&shader);
 		shader_set_int(&shader, "our_texrure", 0);
+		unsigned int transformLoc = glGetUniformLocation(shader.ID, "transform");
+		vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
+		mat4 trans = mat4(1.0f);
+		trans = glm::translate(trans, vec3(0.0f, 0.0f, 0.0f));
+		vec = trans * vec;
+
+		trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.5, -0.5f, 0.0f));;
+		trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
+
+		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
