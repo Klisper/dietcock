@@ -77,7 +77,7 @@ int main(void) {
 	// Load and generate the texture
 	int width, height, nr_channels;
 	stbi_set_flip_vertically_on_load(true);
-	unsigned char* data = stbi_load("gay.jpg", &width, &height, &nr_channels, 0);
+	unsigned char* data = stbi_load("container.jpg", &width, &height, &nr_channels, 0);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	if (data) {
 		GLenum format = (nr_channels == 4) ? GL_RGBA : GL_RGB;
