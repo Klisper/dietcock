@@ -13,6 +13,7 @@ void process_input(GLFWwindow *window);
 void mouse_callback(GLFWwindow* window, double xposIn, double yposIn);
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
 
+bool cursor_locked = true;
 bool firstMouse = true;
 float yaw   = -90.0f;	// yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right so we initially rotate a bit to the left.
 float pitch =  0.0f;
@@ -23,6 +24,8 @@ float fov   =  45.0f;
 // timing
 float deltaTime = 0.0f;	// time between current frame and last frame
 float lastFrame = 0.0f;
+double last_toggle_time = 0.0;
+const double toggle_cooldown = 1.5;
 
 glm::vec3 camera_pos   = glm::vec3(0.0f, 0.0f,  3.0f);
 glm::vec3 camera_front = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -40,7 +43,7 @@ int main(void) {
 		glfwTerminate();
 		return -1;
 	}
-
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_call_size);
 	glfwSetScrollCallback(window, scroll_callback);
@@ -117,11 +120,12 @@ int main(void) {
 	  glm::vec3(-1.3f,  1.0f, -1.5f)  
 	};
 
-	unsigned int VAO, VBO, EBO;
+	unsigned int VAO, VBO;//, EBO;
 	// generate the Vertex Buffer Object, Vertex Array Object
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
+	//glGenBuffers(1, &EBO);
+	glBindVertexArray(VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
@@ -137,7 +141,7 @@ int main(void) {
 	// texture coord attribute
 	//	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(6 * sizeof(float)));
 	//	glEnableVertexAttribArray(2);
-
+	
 	//texture implementation
 	unsigned int texture1, texture2;
 	glGenTextures(1, &texture1);
@@ -293,11 +297,30 @@ void process_input(GLFWwindow *window) {
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
           camera_pos += glm::normalize(glm::cross(camera_front, camera_up)) *
                         camera_speed;
-        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-	  
+		/*if (glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS) {
+			double current_time = glfwGetTime();
+
+			if (current_time - last_toggle_time >= toggle_cooldown) {
+				last_toggle_time = current_time;
+				cursor_locked = !cursor_locked;
+			}
+		}
+		 if (glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS) 
+        cursor_locked = !cursor_locked; // Flip the state
+
+        if (cursor_locked) {
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+            //firstMouse = true; // Reset so the camera doesn't jump on re-lock
+        } else {
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        }
+    */
 }
 
 void mouse_callback(GLFWwindow *window, double xposIn, double yposIn) {
+	/*if (!cursor_locked) {
+		return;
+	}*/
   float xpos = static_cast<float>(xposIn);
   float ypos = static_cast<float>(yposIn);
   if (firstMouse) {
