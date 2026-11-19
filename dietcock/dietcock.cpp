@@ -33,7 +33,7 @@ int main(void) {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
+	
 	GLFWwindow* window = glfwCreateWindow(800, 600, "hi", NULL, NULL);
 	if (window == NULL) {
 		printf("failed to initialize window\n");
@@ -122,12 +122,6 @@ int main(void) {
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 	glGenBuffers(1, &EBO);
-
-        glBindVertexArray(VAO);
-        for (unsigned int i = 0; i < 10; i++) {
-	  
-
-	}
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
@@ -297,7 +291,10 @@ void process_input(GLFWwindow *window) {
           camera_pos -= glm::normalize(glm::cross(camera_front, camera_up)) *
                         camera_speed;
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-          camera_pos += glm::normalize(glm::cross(camera_front, camera_up)) * camera_speed;
+          camera_pos += glm::normalize(glm::cross(camera_front, camera_up)) *
+                        camera_speed;
+        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+	  
 }
 
 void mouse_callback(GLFWwindow *window, double xposIn, double yposIn) {
